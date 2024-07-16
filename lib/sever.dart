@@ -1,29 +1,12 @@
 import 'dart:convert';
+import 'package:seridorflutter/Mysql/Conexion.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:shelf_router/shelf_router.dart';
 import 'package:mysql_client/mysql_client.dart';
 import 'package:shelf_cors_headers/shelf_cors_headers.dart';
 
-class Connection {
-  Future<MySQLConnection> getConnection() async {
-    final conn = await MySQLConnection.createConnection(
-      host: "localhost",
-      port: 3306,
-      userName: "root",
-      password: "root",
-      databaseName: "UniversidadPrueba",
-    );
-    await conn.connect();
-    return conn;
-  }
 
-  Future<void> close(MySQLConnection? conn) async {
-    if (conn != null) {
-      await conn.close();
-    }
-  }
-}
 
 // Configuración del router
 Router _router() {
@@ -47,7 +30,7 @@ Future<Response> _loginHandler(Request request) async {
     return Response(400, body: 'Email and password are required');
   }
 
-  final dbConnection = Connection();
+  final dbConnection = Conexion();
   final conn = await dbConnection.getConnection();
   final result = await conn.execute(
     'SELECT * FROM usuarios WHERE email = :email AND password = :password',
